@@ -7,14 +7,14 @@ import (
 	"github.com/go-redis/redis"
 )
 
-var redisClient *redis.Client
+var RedisClient *redis.Client
 
 func setupRedis() {
-	redisClient = redis.NewClient(&redis.Options{
+	RedisClient = redis.NewClient(&redis.Options{
 		Addr: "localhost:6379",
 	})
 
-	_, err := redisClient.Ping().Result()
+	_, err := RedisClient.Ping().Result()
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)

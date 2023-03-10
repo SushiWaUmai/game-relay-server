@@ -5,14 +5,14 @@ import (
 	"log"
 	"net/http"
 
-	e "github.com/SushiWaUmai/game-server/env"
-	r "github.com/SushiWaUmai/game-server/server"
+	"github.com/SushiWaUmai/game-server/env"
+	"github.com/SushiWaUmai/game-server/server"
 )
 
 func main() {
-	e.SetupDotenv()
-	var router = r.SetupRoutes()
+	env.SetupDotenv()
+	var router = server.SetupRoutes()
 
-	log.Printf("Listening on Port %d...\n", e.PORT)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", e.PORT), router))
+	log.Printf("Listening on Port %d...\n", env.PORT)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", env.PORT), router))
 }

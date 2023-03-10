@@ -31,6 +31,8 @@ func websocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func SetupRoutes() *mux.Router {
+	setupRedis()
+
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", heathcheck).Methods("GET")
 	router.HandleFunc("/lobby", createLobby).Methods("POST")
