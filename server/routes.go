@@ -4,40 +4,36 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
-func heathcheck(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Hello, API!")
+func heathcheck(c *gin.Context) {
+	c.String(http.StatusOK, "Hello, API!")
 }
 
-func createLobby(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-	fmt.Fprintf(w, "Not Implemented")
+func createLobby(c *gin.Context) {
+	c.String(http.StatusNotImplemented, "Not Implemented")
 }
 
-func getLobbies(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-	fmt.Fprintf(w, "Not Implemented")
+func getLobbies(c *gin.Context) {
+	c.String(http.StatusNotImplemented, "Not Implemented")
 }
 
-func websocket(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+func websocket(c *gin.Context) {
+	id := c.Param("id")
 	fmt.Printf("Trying to access lobby with id: %s...", id)
 
-	w.WriteHeader(http.StatusNotImplemented)
-	fmt.Fprintf(w, "Not Implemented")
+	c.String(http.StatusNotImplemented, "Not Implemented")
 }
 
-func SetupRoutes() *mux.Router {
+func SetupRoutes() *gin.Engine {
 	setupRedis()
 
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", heathcheck).Methods("GET")
-	router.HandleFunc("/lobby", createLobby).Methods("POST")
-	router.HandleFunc("/lobby", getLobbies).Methods("GET")
-	router.HandleFunc("/lobby/{id}", websocket).Methods("GET")
+	router := gin.Default()
+	router.GET("/", heathcheck)
+	router.GET("/lobby", getLobbies)
+	router.POST("/lobby", createLobby)
+	router.GET("/lobby/{id}", websocket)
 
 	return router
 }
