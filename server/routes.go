@@ -11,40 +11,54 @@ func heathcheck(c *gin.Context) {
 	c.String(http.StatusOK, "Hello, API!")
 }
 
-type CreateOrJoinLobbyRequest struct {
+type joinLobbyRequest struct {
+	LobbyId  string `json:"lobbyId"`
 	PlayerId string `json:"playerId"`
 }
 
-type CreateOrJoinLobbyResponse struct {
+type joinLobbyResponse struct {
+}
+
+type createLobbyResponse struct {
 	LobbyId string `json:"lobbyId"`
 }
 
-func createOrJoinLobby(c *gin.Context) {
-	var requestBody CreateOrJoinLobbyRequest
+func createLobby(c *gin.Context) {
+	lobbyId := RandSeq(5)
 
-	if err := c.BindJSON(&requestBody); err != nil {
+	// Create Lobby in Redis
+	res, err := RedisJsonHandler.JSONArrAppend("lobbies", ".", lobbyId)
+	CheckRedisError(res, err)
+
+	responseBody := createLobbyResponse{
+		LobbyId: lobbyId,
 	}
 
-	lobbyId := RandSeq(5)
+	c.JSON(http.StatusOK, responseBody)
+}
+
+func joinLobby(c *gin.Context) {
+	var requestBody joinLobbyRequest
+
+	if err := c.BindJSON(&requestBody); err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	playerId := requestBody.PlayerId
+	lobbyId := requestBody.LobbyId
 
 	ip := c.Request.RemoteAddr
 
-	err := RedisClient.SAdd("lobbies:"+lobbyId, playerId).Err()
-	if err != nil {
-		c.String(http.StatusInternalServerError, err.Error())
-		return
-	}
+	// Save Lobby in Redis
+	res, err := RedisJsonHandler.JSONArrAppend(lobbyId, ".", playerId)
+	CheckRedisError(res, err)
 
-	err = RedisClient.Set("player:"+playerId+":ip", ip, 0).Err()
-	if err != nil {
-		c.String(http.StatusInternalServerError, err.Error())
-		return
-	}
+	// Save the player in Redis
+	res, err = RedisJsonHandler.JSONArrAppend(playerId, ".", ip)
+	CheckRedisError(res, err)
 
-	responseBody := CreateOrJoinLobbyResponse{
-		LobbyId: lobbyId,
-	}
+	responseBody := joinLobbyResponse{}
 
 	c.JSON(http.StatusOK, responseBody)
 }
@@ -61,12 +75,11 @@ func websocket(c *gin.Context) {
 }
 
 func SetupRoutes() *gin.Engine {
-	setupRedis()
-
 	router := gin.Default()
 	router.GET("/", heathcheck)
 	router.GET("/lobby", getLobbies)
-	router.POST("/lobby", createOrJoinLobby)
+	router.POST("/lobby/create", createLobby)
+	router.POST("/lobby/join", joinLobby)
 	router.GET("/lobby/{id}", websocket)
 
 	return router
