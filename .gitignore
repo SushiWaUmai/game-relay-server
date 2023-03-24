@@ -22,4 +22,8 @@ go.work
 
 .env
 
+# executable name
 game-server
+
+# sqlite file
+game.db

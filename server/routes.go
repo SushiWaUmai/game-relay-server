@@ -26,9 +26,7 @@ type createLobbyResponse struct {
 func createLobby(c *gin.Context) {
 	lobbyId := RandSeq(5)
 
-	// Create Lobby in Redis
-	res, err := RedisJsonHandler.JSONArrAppend("lobbies", ".", lobbyId)
-	CheckRedisError(res, err)
+	// Create Lobby
 
 	responseBody := createLobbyResponse{
 		LobbyId: lobbyId,
@@ -45,18 +43,13 @@ func joinLobby(c *gin.Context) {
 		return
 	}
 
-	playerId := requestBody.PlayerId
-	lobbyId := requestBody.LobbyId
+	// playerId := requestBody.PlayerId
+	// lobbyId := requestBody.LobbyId
 
-	ip := c.Request.RemoteAddr
+	// ip := c.Request.RemoteAddr
 
-	// Save Lobby in Redis
-	res, err := RedisJsonHandler.JSONArrAppend(lobbyId, ".", playerId)
-	CheckRedisError(res, err)
-
-	// Save the player in Redis
-	res, err = RedisJsonHandler.JSONArrAppend(playerId, ".", ip)
-	CheckRedisError(res, err)
+	// Save Lobby
+	// Save the player
 
 	responseBody := joinLobbyResponse{}
 
