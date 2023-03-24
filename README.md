@@ -8,10 +8,10 @@ Simple game relay server written in go.
 version: "3"
 services:
   game-server:
-		image: sushiwaumai/game-relay-server
+    image: sushiwaumai/game-relay-server
     ports:
       - 8080:8080
-    volumes: 
+    volumes:
       - .:/dev.db
     env_file:
       .env
