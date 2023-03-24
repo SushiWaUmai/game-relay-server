@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/SushiWaUmai/game-server/db"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,58 +12,46 @@ func heathcheck(c *gin.Context) {
 	c.String(http.StatusOK, "Hello, API!")
 }
 
-type joinLobbyRequest struct {
-	LobbyId  string `json:"lobbyId"`
-	PlayerId string `json:"playerId"`
-}
-
-type joinLobbyResponse struct {
-}
-
 type createLobbyResponse struct {
-	LobbyId string `json:"lobbyId"`
+	JoinCode string `json:"joinCode"`
 }
 
 func createLobby(c *gin.Context) {
-	lobbyId := RandSeq(5)
+	joinCode := RandSeq(5)
 
 	// Create Lobby
+	db.DatabaseConnection.Create(&db.Lobby{
+		JoinCode: joinCode,
+	})
 
 	responseBody := createLobbyResponse{
-		LobbyId: lobbyId,
+		JoinCode: joinCode,
 	}
-
-	c.JSON(http.StatusOK, responseBody)
-}
-
-func joinLobby(c *gin.Context) {
-	var requestBody joinLobbyRequest
-
-	if err := c.BindJSON(&requestBody); err != nil {
-		c.String(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	// playerId := requestBody.PlayerId
-	// lobbyId := requestBody.LobbyId
-
-	// ip := c.Request.RemoteAddr
-
-	// Save Lobby
-	// Save the player
-
-	responseBody := joinLobbyResponse{}
 
 	c.JSON(http.StatusOK, responseBody)
 }
 
 func getLobbies(c *gin.Context) {
-	c.String(http.StatusNotImplemented, "Not Implemented")
+	var lobbies []db.Lobby
+	db.DatabaseConnection.Find(&lobbies)
+
+	c.JSON(http.StatusOK, lobbies)
 }
 
-func websocket(c *gin.Context) {
-	id := c.Param("id")
-	fmt.Printf("Trying to access lobby with id: %s...", id)
+func joinLobby(c *gin.Context) {
+	joinCode := c.Param("joinCode")
+	fmt.Printf("Trying to access lobby with joinCode: %s...", joinCode)
+
+	ip := c.Request.RemoteAddr
+
+	var lobby db.Lobby
+	db.DatabaseConnection.Where("JoinCode = ?", joinCode).First(&lobby)
+
+	// Save the player
+	db.DatabaseConnection.Create(&db.Player{
+		LobbyID: lobby.ID,
+		IP:      ip,
+	})
 
 	c.String(http.StatusNotImplemented, "Not Implemented")
 }
@@ -71,9 +60,8 @@ func SetupRoutes() *gin.Engine {
 	router := gin.Default()
 	router.GET("/", heathcheck)
 	router.GET("/lobby", getLobbies)
-	router.POST("/lobby/create", createLobby)
-	router.POST("/lobby/join", joinLobby)
-	router.GET("/lobby/{id}", websocket)
+	router.POST("/lobby", createLobby)
+	router.GET("/lobby/{joinCode}", joinLobby)
 
 	return router
 }

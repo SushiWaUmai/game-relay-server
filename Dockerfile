@@ -16,4 +16,5 @@ WORKDIR /
 
 COPY --from=builder /game-server .
 
+ENV GIN_MODE=release
 CMD ["./game-server"]

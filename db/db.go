@@ -12,6 +12,14 @@ var DatabaseConnection *gorm.DB
 
 type Lobby struct {
 	gorm.Model
+	JoinCode string
+	Players []Player
+}
+
+type Player struct {
+	gorm.Model
+	IP string
+	LobbyID uint
 }
 
 func init() {
@@ -26,4 +34,7 @@ func setupDatabase() {
 		log.Fatal("Failed to create database connection")
 		os.Exit(1)
 	}
+
+	DatabaseConnection.AutoMigrate(Player{})
+	DatabaseConnection.AutoMigrate(Lobby{})
 }
