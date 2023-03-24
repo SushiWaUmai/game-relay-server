@@ -7,7 +7,7 @@ COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
-RUN go build -a -ldflags "-linkmode external -extldflags '-static' -s -w"
+RUN go build
 
 FROM alpine as runner
 RUN apk update
