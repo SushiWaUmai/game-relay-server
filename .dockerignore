@@ -1,0 +1,14 @@
+docker-compose.env
+docker-compose*.yml
+.vscode
+Dockerfile
+**/Dockerfile
+
+game.db
+
+LICENSE
+*.md
+**/*.md
+
+.env.*
+.github
