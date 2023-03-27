@@ -23,7 +23,7 @@ go.work
 .env
 
 # executable name
-game-server
+game-relay-server
 
 # sqlite file
 game.db

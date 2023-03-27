@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/SushiWaUmai/game-server/db"
+	"github.com/SushiWaUmai/game-relay-server/db"
 	"github.com/gin-gonic/gin"
 )
 

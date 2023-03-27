@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/SushiWaUmai/game-server/env"
-	"github.com/SushiWaUmai/game-server/server"
+	"github.com/SushiWaUmai/game-relay-server/env"
+	"github.com/SushiWaUmai/game-relay-server/server"
 )
 
 func main() {
