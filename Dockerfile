@@ -12,7 +12,7 @@ FROM alpine as runner
 RUN apk update
 WORKDIR /
 
-COPY --from=builder /game-server .
+COPY --from=builder /game-relay-server .
 
 ENV GIN_MODE=release
-CMD ["./game-server"]
+CMD ["./game-relay-server"]

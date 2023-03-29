@@ -1,35 +1,36 @@
-package server
+package game
 
 import (
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/SushiWaUmai/game-relay-server/env"
 	"github.com/gorilla/websocket"
 )
 
 type Lobby struct {
-	lobbyId string
-	clients map[*Client]bool
-	join    chan *Client
-	leave   chan *Client
-	forward chan []byte
+	JoinCode string `json:"joinCode"`
+	clients  map[*Client]bool
+	join     chan *Client
+	leave    chan *Client
+	forward  chan []byte
 }
 
-var Lobbies = make(map[string]*Lobby)
+var Lobbies sync.Map
 
 func NewLobby() *Lobby {
-	id := RandSeq(5)
+	joincode := RandSeq(5)
 
 	lobby := &Lobby{
-		lobbyId: id,
+		JoinCode: joincode,
 		forward: make(chan []byte),
 		join:    make(chan *Client),
 		leave:   make(chan *Client),
 		clients: make(map[*Client]bool),
 	}
 
-	Lobbies[id] = lobby
+	Lobbies.Store(joincode, lobby)
 	return lobby
 }
 

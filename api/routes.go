@@ -1,10 +1,10 @@
-package server
+package api
 
 import (
 	"fmt"
 	"net/http"
 
-	// "github.com/SushiWaUmai/game-relay-server/db"
+	"github.com/SushiWaUmai/game-relay-server/game"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,43 +17,40 @@ type createLobbyResponse struct {
 }
 
 func createLobby(c *gin.Context) {
-	joinCode := RandSeq(5)
-
 	// Create Lobby
-	// db.DatabaseConnection.Create(&db.Lobby{
-	// 	JoinCode: joinCode,
-	// })
+	lobby := game.NewLobby()
 
 	responseBody := createLobbyResponse{
-		JoinCode: joinCode,
+		JoinCode: lobby.JoinCode,
 	}
 
 	c.JSON(http.StatusOK, responseBody)
 }
 
 func getLobbies(c *gin.Context) {
-	// var lobbies []db.Lobby
-	// db.DatabaseConnection.Find(&lobbies)
+	var lobbies []game.Lobby
 
-	// c.JSON(http.StatusOK, lobbies)
+	game.Lobbies.Range(func(key any, value any) bool {
+		l := value.(game.Lobby)
+		_ = append(lobbies, l)
+
+		return true
+	})
+
+	c.JSON(http.StatusOK, lobbies)
 }
 
 func joinLobby(c *gin.Context) {
 	joinCode := c.Param("joinCode")
 	fmt.Printf("Trying to access lobby with joinCode: %s...", joinCode)
 
-	// ip := c.Request.RemoteAddr
+	value, ok := game.Lobbies.Load(joinCode)
+	if !ok {
+		c.String(http.StatusInternalServerError, "Could not find lobby")
+	}
+	lobby := value.(game.Lobby)
 
-	// var lobby db.Lobby
-	// db.DatabaseConnection.Where("JoinCode = ?", joinCode).First(&lobby)
-
-	// // Save the player
-	// db.DatabaseConnection.Create(&db.Player{
-	// 	LobbyID: lobby.ID,
-	// 	IP:      ip,
-	// })
-
-	c.String(http.StatusNotImplemented, "Not Implemented")
+	lobby.ServeHTTP(c.Writer, c.Request)
 }
 
 func SetupRoutes() *gin.Engine {
