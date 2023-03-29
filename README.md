@@ -10,8 +10,6 @@ services:
     image: sushiwaumai/game-relay-server
     ports:
       - 8080:8080
-    volumes:
-      - .:/dev.db
     env_file:
       .env
 ```
