@@ -5,9 +5,9 @@ import (
 )
 
 type Client struct {
-	socket *websocket.Conn
+	socket  *websocket.Conn
 	receive chan []byte
-	lobby *Lobby
+	lobby   *Lobby
 }
 
 func (c *Client) read() {

@@ -24,10 +24,10 @@ func NewLobby() *Lobby {
 
 	lobby := &Lobby{
 		JoinCode: joincode,
-		forward: make(chan []byte),
-		join:    make(chan *Client),
-		leave:   make(chan *Client),
-		clients: make(map[*Client]bool),
+		forward:  make(chan []byte),
+		join:     make(chan *Client),
+		leave:    make(chan *Client),
+		clients:  make(map[*Client]bool),
 	}
 
 	Lobbies.Store(joincode, lobby)
@@ -59,7 +59,7 @@ var upgrader = &websocket.Upgrader{ReadBufferSize: env.SOCKET_BUFFER_SIZE, Write
 func (l *Lobby) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	socket, err := upgrader.Upgrade(w, req, nil)
 	if err != nil {
-		log.Fatal("Failed to upgrade websoccet connection", err)
+		log.Fatal("Failed to upgrade websocket connection", err)
 		return
 	}
 

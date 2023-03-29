@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	PORT = 8080
-	SOCKET_BUFFER_SIZE = 1024
+	PORT                = 8080
+	SOCKET_BUFFER_SIZE  = 1024
 	MESSAGE_BUFFER_SIZE = 256
 )
 
