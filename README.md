@@ -2,7 +2,6 @@
 
 Simple game relay server written in go.
 
-
 ## Getting Started
 ```
 version: "3"
@@ -16,3 +15,6 @@ services:
     env_file:
       .env
 ```
+
+## License 
+[MIT](./LICENSE)
