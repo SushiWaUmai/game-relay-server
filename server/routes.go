@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/SushiWaUmai/game-relay-server/db"
+	// "github.com/SushiWaUmai/game-relay-server/db"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,9 +20,9 @@ func createLobby(c *gin.Context) {
 	joinCode := RandSeq(5)
 
 	// Create Lobby
-	db.DatabaseConnection.Create(&db.Lobby{
-		JoinCode: joinCode,
-	})
+	// db.DatabaseConnection.Create(&db.Lobby{
+	// 	JoinCode: joinCode,
+	// })
 
 	responseBody := createLobbyResponse{
 		JoinCode: joinCode,
@@ -32,26 +32,26 @@ func createLobby(c *gin.Context) {
 }
 
 func getLobbies(c *gin.Context) {
-	var lobbies []db.Lobby
-	db.DatabaseConnection.Find(&lobbies)
+	// var lobbies []db.Lobby
+	// db.DatabaseConnection.Find(&lobbies)
 
-	c.JSON(http.StatusOK, lobbies)
+	// c.JSON(http.StatusOK, lobbies)
 }
 
 func joinLobby(c *gin.Context) {
 	joinCode := c.Param("joinCode")
 	fmt.Printf("Trying to access lobby with joinCode: %s...", joinCode)
 
-	ip := c.Request.RemoteAddr
+	// ip := c.Request.RemoteAddr
 
-	var lobby db.Lobby
-	db.DatabaseConnection.Where("JoinCode = ?", joinCode).First(&lobby)
+	// var lobby db.Lobby
+	// db.DatabaseConnection.Where("JoinCode = ?", joinCode).First(&lobby)
 
-	// Save the player
-	db.DatabaseConnection.Create(&db.Player{
-		LobbyID: lobby.ID,
-		IP:      ip,
-	})
+	// // Save the player
+	// db.DatabaseConnection.Create(&db.Player{
+	// 	LobbyID: lobby.ID,
+	// 	IP:      ip,
+	// })
 
 	c.String(http.StatusNotImplemented, "Not Implemented")
 }

@@ -24,6 +24,3 @@ go.work
 
 # executable name
 game-relay-server
-
-# sqlite file
-game.db
