@@ -3,6 +3,7 @@ package game
 import (
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/SushiWaUmai/game-relay-server/env"
 	"github.com/gorilla/websocket"
@@ -16,7 +17,7 @@ type Lobby struct {
 	forward  chan []byte
 }
 
-var Lobbies = make(map[string]*Lobby)
+var Lobbies sync.Map
 
 func NewLobby() *Lobby {
 	joincode := RandSeq(5)
@@ -29,7 +30,7 @@ func NewLobby() *Lobby {
 		clients:  make(map[*Client]bool),
 	}
 
-	Lobbies[joincode] = lobby
+	Lobbies.Store(joincode, lobby)
 	return lobby
 }
 

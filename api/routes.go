@@ -30,9 +30,12 @@ func createLobby(c *gin.Context) {
 func getLobbies(c *gin.Context) {
 	lobbies := make([]*game.Lobby, 0)
 
-	for _, l := range game.Lobbies {
+	game.Lobbies.Range(func(key, value interface {}) bool {
+		l := value.(*game.Lobby)
 		lobbies = append(lobbies, l)
-	}
+
+		return true
+	})
 
 	c.JSON(http.StatusOK, lobbies)
 }
@@ -41,12 +44,15 @@ func joinLobby(c *gin.Context) {
 	joinCode := c.Param("joinCode")
 	log.Printf("Trying to access lobby with joinCode: %s...\n", joinCode)
 
-	lobby := game.Lobbies[joinCode]
-	if lobby == nil {
+	value, ok := game.Lobbies.Load(joinCode)
+
+	if !ok {
 		log.Fatal("Could not find lobby")
 		c.String(http.StatusNotFound, "Could not find lobby")
 		return
 	}
+
+	lobby := value.(game.Lobby)
 
 	lobby.ServeHTTP(c.Writer, c.Request)
 }
