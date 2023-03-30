@@ -63,6 +63,8 @@ func (l *Lobby) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	log.Printf("Successfully upgraded websocket connection")
+
 	client := &Client{
 		socket:  socket,
 		receive: make(chan []byte, env.MESSAGE_BUFFER_SIZE),

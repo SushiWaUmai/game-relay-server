@@ -52,7 +52,7 @@ func joinLobby(c *gin.Context) {
 		return
 	}
 
-	lobby := value.(game.Lobby)
+	lobby := value.(*game.Lobby)
 
 	lobby.ServeHTTP(c.Writer, c.Request)
 }
@@ -62,7 +62,7 @@ func SetupRoutes() *gin.Engine {
 	router.GET("/", heathcheck)
 	router.GET("/lobby", getLobbies)
 	router.POST("/lobby", createLobby)
-	router.POST("/lobby/{joinCode}", joinLobby)
+	router.GET("/lobby/:joinCode", joinLobby)
 
 	return router
 }
