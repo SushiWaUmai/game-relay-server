@@ -1,7 +1,7 @@
 package api
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/SushiWaUmai/game-relay-server/game"
@@ -28,27 +28,25 @@ func createLobby(c *gin.Context) {
 }
 
 func getLobbies(c *gin.Context) {
-	var lobbies []game.Lobby
+	lobbies := make([]*game.Lobby, 0)
 
-	game.Lobbies.Range(func(key any, value any) bool {
-		l := value.(game.Lobby)
-		_ = append(lobbies, l)
-
-		return true
-	})
+	for _, l := range game.Lobbies {
+		lobbies = append(lobbies, l)
+	}
 
 	c.JSON(http.StatusOK, lobbies)
 }
 
 func joinLobby(c *gin.Context) {
 	joinCode := c.Param("joinCode")
-	fmt.Printf("Trying to access lobby with joinCode: %s...", joinCode)
+	log.Printf("Trying to access lobby with joinCode: %s...\n", joinCode)
 
-	value, ok := game.Lobbies.Load(joinCode)
-	if !ok {
-		c.String(http.StatusInternalServerError, "Could not find lobby")
+	lobby := game.Lobbies[joinCode]
+	if lobby == nil {
+		log.Fatal("Could not find lobby")
+		c.String(http.StatusNotFound, "Could not find lobby")
+		return
 	}
-	lobby := value.(game.Lobby)
 
 	lobby.ServeHTTP(c.Writer, c.Request)
 }
@@ -58,7 +56,7 @@ func SetupRoutes() *gin.Engine {
 	router.GET("/", heathcheck)
 	router.GET("/lobby", getLobbies)
 	router.POST("/lobby", createLobby)
-	router.GET("/lobby/{joinCode}", joinLobby)
+	router.POST("/lobby/{joinCode}", joinLobby)
 
 	return router
 }
