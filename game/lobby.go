@@ -31,6 +31,7 @@ func NewLobby() *Lobby {
 	}
 
 	Lobbies.Store(joincode, lobby)
+	go lobby.Run()
 	return lobby
 }
 
@@ -63,7 +64,7 @@ func (l *Lobby) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	log.Printf("Successfully upgraded websocket connection")
+	log.Println("Successfully upgraded websocket connection")
 
 	client := &Client{
 		socket:  socket,
