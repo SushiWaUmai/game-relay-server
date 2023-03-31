@@ -13,5 +13,5 @@ func main() {
 	var router = api.SetupRoutes()
 
 	log.Printf("Listening on Port %d...\n", env.PORT)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", env.PORT), router))
+	log.Fatalln(http.ListenAndServe(fmt.Sprintf(":%d", env.PORT), router))
 }

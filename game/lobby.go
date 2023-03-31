@@ -74,8 +74,21 @@ func (l *Lobby) Run() {
 	}
 }
 
-func (l *Lobby) PlayerNum() int {
+func (l *Lobby) ClientNum() int {
 	return len(l.clients)
+}
+
+func (l *Lobby) Clients() []*Client {
+	clients := make([]*Client, 0)
+	for _, c := range l.clients {
+		clients = append(clients, c)
+	}
+
+	return clients
+}
+
+func (l *Lobby) GetClient(id uint) *Client {
+	return l.clients[id]
 }
 
 var upgrader = &websocket.Upgrader{ReadBufferSize: env.SOCKET_BUFFER_SIZE, WriteBufferSize: env.SOCKET_BUFFER_SIZE}
@@ -83,7 +96,7 @@ var upgrader = &websocket.Upgrader{ReadBufferSize: env.SOCKET_BUFFER_SIZE, Write
 func (l *Lobby) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	socket, err := upgrader.Upgrade(w, req, nil)
 	if err != nil {
-		log.Fatal("Failed to upgrade websocket connection", err)
+		log.Println("Failed to upgrade websocket connection", err)
 		return
 	}
 

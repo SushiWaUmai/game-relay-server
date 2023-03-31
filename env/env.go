@@ -16,7 +16,7 @@ func setupDotenv() {
 		log.Println("Found a .env file. Loading...")
 
 		if err := godotenv.Load(); err != nil {
-			log.Fatal("Failed to load env file")
+			log.Println("Failed to load env file")
 			os.Exit(1)
 		}
 	}
