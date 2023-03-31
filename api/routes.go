@@ -13,15 +13,11 @@ func heathcheck(c *gin.Context) {
 	c.String(http.StatusOK, "Hello, API!")
 }
 
-type createLobbyResponse struct {
-	JoinCode string `json:"joinCode"`
-}
-
 func createLobby(c *gin.Context) {
 	// Create Lobby
 	lobby := game.NewLobby()
 
-	responseBody := createLobbyResponse{
+	responseBody := game.Lobby{
 		JoinCode: lobby.JoinCode,
 	}
 
