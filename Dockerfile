@@ -1,5 +1,4 @@
 FROM golang:alpine AS builder
-RUN apk update
 WORKDIR /
 
 COPY go.mod go.sum ./
@@ -9,7 +8,6 @@ COPY . .
 RUN go build
 
 FROM alpine as runner
-RUN apk update
 WORKDIR /
 
 COPY --from=builder /game-relay-server .
