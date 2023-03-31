@@ -9,7 +9,7 @@ import (
 type Client struct {
 	Id      uint `json:"clientId"`
 	socket  *websocket.Conn
-	receive chan []byte
+	receive chan Message
 	lobby   *Lobby
 }
 
@@ -22,40 +22,22 @@ func (c *Client) read() {
 		if err != nil {
 			return
 		}
-		msgData, err := json.Marshal(&msg)
-		if err != nil {
-			return
-		}
-		c.lobby.forward <- msgData
+		c.lobby.forward <- msg
 	}
 }
 
 func (c *Client) write() {
 	defer c.socket.Close()
-	var msg Message
-	var err error
 
-	for msgData := range c.receive {
-		err = json.Unmarshal(msgData, &msg)
+	for msg := range c.receive {
+		msgData, err := json.Marshal(msg)
 		if err != nil {
 			return
 		}
 
-		if msg.Targets == nil {
-			err = c.socket.WriteMessage(websocket.TextMessage, msgData)
-			if err != nil {
-				return
-			}
-		}
-
-		for _, t := range msg.Targets {
-			if t == c.Id {
-				err = c.socket.WriteMessage(websocket.TextMessage, msgData)
-				if err != nil {
-					return
-				}
-				break
-			}
+		err = c.socket.WriteMessage(websocket.TextMessage, msgData)
+		if err != nil {
+			return
 		}
 	}
 }

@@ -11,10 +11,10 @@ import (
 
 type Lobby struct {
 	JoinCode   string `json:"joinCode"`
-	clients    map[*Client]bool
+	clients    map[uint]*Client
 	join       chan *Client
 	leave      chan *Client
-	forward    chan []byte
+	forward    chan Message
 	currentIdx uint
 }
 
@@ -25,10 +25,10 @@ func NewLobby() *Lobby {
 
 	lobby := &Lobby{
 		JoinCode: joincode,
-		forward:  make(chan []byte),
+		forward:  make(chan Message),
 		join:     make(chan *Client),
 		leave:    make(chan *Client),
-		clients:  make(map[*Client]bool),
+		clients:  make(map[uint]*Client),
 	}
 
 	Lobbies.Store(joincode, lobby)
@@ -36,18 +36,40 @@ func NewLobby() *Lobby {
 	return lobby
 }
 
+func sendMsg(l *Lobby, msg Message) {
+	if msg.Targets == nil {
+		for _, client := range l.clients {
+			client.receive <- msg
+		}
+	} else {
+		for _, c := range msg.Targets {
+			l.clients[c].receive <- msg
+		}
+	}
+}
+
 func (l *Lobby) Run() {
 	for {
 		select {
 		case client := <-l.join:
-			l.clients[client] = true
+			l.clients[client.Id] = client
+			msg := Message {
+				MsgType: "join",
+				Data:    nil,
+				Targets: nil,
+			}
+			sendMsg(l, msg)
 		case client := <-l.leave:
-			delete(l.clients, client)
+			delete(l.clients, client.Id)
+			msg := Message {
+				MsgType: "leave",
+				Data:    nil,
+				Targets: nil,
+			}
+			sendMsg(l, msg)
 			close(client.receive)
 		case msg := <-l.forward:
-			for client := range l.clients {
-				client.receive <- msg
-			}
+			sendMsg(l, msg)
 		}
 	}
 }
@@ -70,7 +92,7 @@ func (l *Lobby) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	client := &Client{
 		Id:      l.currentIdx,
 		socket:  socket,
-		receive: make(chan []byte, env.MESSAGE_BUFFER_SIZE),
+		receive: make(chan Message),
 		lobby:   l,
 	}
 	l.currentIdx++
