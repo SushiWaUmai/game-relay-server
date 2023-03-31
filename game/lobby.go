@@ -15,7 +15,7 @@ type Lobby struct {
 	join       chan *Client
 	leave      chan *Client
 	forward    chan []byte
-	currentIdx uint
+	currentIdx int
 }
 
 var Lobbies sync.Map

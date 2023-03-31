@@ -7,7 +7,7 @@ import (
 )
 
 type Client struct {
-	Id      uint `json:"clientId"`
+	Id      int `json:"clientId"`
 	socket  *websocket.Conn
 	receive chan []byte
 	lobby   *Lobby
@@ -32,10 +32,30 @@ func (c *Client) read() {
 
 func (c *Client) write() {
 	defer c.socket.Close()
-	for msg := range c.receive {
-		err := c.socket.WriteMessage(websocket.TextMessage, msg)
+	var msg Message
+	var err error
+
+	for msgData := range c.receive {
+		err = json.Unmarshal(msgData, &msg)
 		if err != nil {
 			return
+		}
+
+		if msg.Targets == nil {
+			err = c.socket.WriteMessage(websocket.TextMessage, msgData)
+			if err != nil {
+				return
+			}
+		}
+
+		for t := range msg.Targets {
+			if t == c.Id {
+				err = c.socket.WriteMessage(websocket.TextMessage, msgData)
+				if err != nil {
+					return
+				}
+				break
+			}
 		}
 	}
 }
