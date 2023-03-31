@@ -68,6 +68,10 @@ func (l *Lobby) Run() {
 			}
 			sendMsg(l, msg)
 			close(client.receive)
+
+			if len(l.clients) == 0 {
+				Lobbies.Delete(l.JoinCode)
+			}
 		case msg := <-l.forward:
 			sendMsg(l, msg)
 		}
