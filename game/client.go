@@ -5,6 +5,7 @@ import (
 )
 
 type Client struct {
+	Id      uint `json:"clientId"`
 	socket  *websocket.Conn
 	receive chan []byte
 	lobby   *Lobby

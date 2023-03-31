@@ -10,11 +10,12 @@ import (
 )
 
 type Lobby struct {
-	JoinCode string `json:"joinCode"`
-	clients  map[*Client]bool
-	join     chan *Client
-	leave    chan *Client
-	forward  chan []byte
+	JoinCode   string `json:"joinCode"`
+	clients    map[*Client]bool
+	join       chan *Client
+	leave      chan *Client
+	forward    chan []byte
+	currentIdx uint
 }
 
 var Lobbies sync.Map
@@ -67,10 +68,12 @@ func (l *Lobby) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	log.Println("Successfully upgraded websocket connection")
 
 	client := &Client{
+		Id:      l.currentIdx,
 		socket:  socket,
 		receive: make(chan []byte, env.MESSAGE_BUFFER_SIZE),
 		lobby:   l,
 	}
+	l.currentIdx++
 
 	l.join <- client
 	defer func() {
