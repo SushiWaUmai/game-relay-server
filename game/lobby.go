@@ -92,7 +92,7 @@ func (l *Lobby) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	client := &Client{
 		Id:      l.currentIdx,
 		socket:  socket,
-		receive: make(chan Message),
+		receive: make(chan Message, env.SOCKET_BUFFER_SIZE),
 		lobby:   l,
 	}
 	l.currentIdx++
