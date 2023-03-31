@@ -8,6 +8,7 @@ import (
 
 type Client struct {
 	Id      uint `json:"clientId"`
+	Data    any  `json:"data"`
 	socket  *websocket.Conn
 	receive chan Message
 	lobby   *Lobby
@@ -16,7 +17,6 @@ type Client struct {
 func (c *Client) read() {
 	defer c.socket.Close()
 	for {
-		// _, msg, err := c.socket.ReadMessage()
 		var msg Message
 		err := c.socket.ReadJSON(&msg)
 		if err != nil {
