@@ -53,17 +53,17 @@ func (l *Lobby) Run() {
 		select {
 		case client := <-l.join:
 			l.clients[client.Id] = client
-			msg := Message {
+			msg := Message{
 				MsgType: "join",
-				Data:    nil,
+				Data:    client,
 				Targets: nil,
 			}
 			sendMsg(l, msg)
 		case client := <-l.leave:
 			delete(l.clients, client.Id)
-			msg := Message {
+			msg := Message{
 				MsgType: "leave",
-				Data:    nil,
+				Data:    client,
 				Targets: nil,
 			}
 			sendMsg(l, msg)
