@@ -36,7 +36,7 @@ func NewLobby() *Lobby {
 	return lobby
 }
 
-func sendMsg(l *Lobby, msg Message) {
+func (l *Lobby) sendMsg(msg Message) {
 	if msg.Targets == nil {
 		for _, client := range l.clients {
 			client.receive <- msg
@@ -48,32 +48,46 @@ func sendMsg(l *Lobby, msg Message) {
 	}
 }
 
+func (l *Lobby) handleForward(msg Message) {
+	l.sendMsg(msg)
+}
+
+func (l *Lobby) handleJoin(client *Client) {
+	l.clients[client.Id] = client
+	msg := Message{
+		MsgType: "lobby:join",
+		Author: client.Id,
+		Data:    client,
+		Targets: nil,
+	}
+	l.sendMsg(msg)
+}
+
+func (l *Lobby) handleLeave(client *Client) {
+	delete(l.clients, client.Id)
+	msg := Message{
+		MsgType: "lobby:leave",
+		Author: client.Id,
+		Data:    client,
+		Targets: nil,
+	}
+	l.sendMsg(msg)
+	close(client.receive)
+
+	if len(l.clients) == 0 {
+		Lobbies.Delete(l.JoinCode)
+	}
+}
+
 func (l *Lobby) Run() {
 	for {
 		select {
 		case client := <-l.join:
-			l.clients[client.Id] = client
-			msg := Message{
-				MsgType: "join",
-				Data:    client,
-				Targets: nil,
-			}
-			sendMsg(l, msg)
+			l.handleJoin(client)
 		case client := <-l.leave:
-			delete(l.clients, client.Id)
-			msg := Message{
-				MsgType: "leave",
-				Data:    client,
-				Targets: nil,
-			}
-			sendMsg(l, msg)
-			close(client.receive)
-
-			if len(l.clients) == 0 {
-				Lobbies.Delete(l.JoinCode)
-			}
+			l.handleLeave(client)
 		case msg := <-l.forward:
-			sendMsg(l, msg)
+			l.handleForward(msg)
 		}
 	}
 }

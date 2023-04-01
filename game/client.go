@@ -22,6 +22,7 @@ func (c *Client) read() {
 		if err != nil {
 			return
 		}
+		msg.Author = c.Id
 		c.lobby.forward <- msg
 	}
 }
