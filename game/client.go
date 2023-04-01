@@ -8,7 +8,6 @@ import (
 
 type Client struct {
 	Id      uint `json:"clientId"`
-	Data    any  `json:"data"`
 	socket  *websocket.Conn
 	receive chan Message
 	lobby   *Lobby
@@ -22,7 +21,6 @@ func (c *Client) read() {
 		if err != nil {
 			return
 		}
-		msg.Author = c.Id
 		c.lobby.forward <- msg
 	}
 }

@@ -55,8 +55,7 @@ func (l *Lobby) handleForward(msg Message) {
 func (l *Lobby) handleJoin(client *Client) {
 	l.clients[client.Id] = client
 	msg := Message{
-		MsgType: "lobby:join",
-		Author: client.Id,
+		MsgType: "client:join",
 		Data:    client,
 		Targets: nil,
 	}
@@ -66,8 +65,7 @@ func (l *Lobby) handleJoin(client *Client) {
 func (l *Lobby) handleLeave(client *Client) {
 	delete(l.clients, client.Id)
 	msg := Message{
-		MsgType: "lobby:leave",
-		Author: client.Id,
+		MsgType: "client:leave",
 		Data:    client,
 		Targets: nil,
 	}
