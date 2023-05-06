@@ -1,4 +1,4 @@
-module github.com/SushiWaUmai/game-relay-server
+module github.com/SushiWaUmai/relayroom
 
 go 1.20
 

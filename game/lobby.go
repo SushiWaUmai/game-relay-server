@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/SushiWaUmai/game-relay-server/env"
+	"github.com/SushiWaUmai/relayroom/env"
 	"github.com/gorilla/websocket"
 )
 

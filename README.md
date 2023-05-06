@@ -1,4 +1,4 @@
-# Game Relay Server
+# Relayroom
 
 Simple game relay server written in go.
 
@@ -7,7 +7,7 @@ Simple game relay server written in go.
 version: "3"
 services:
   game-server:
-    image: sushiwaumai/game-relay-server
+    image: sushiwaumai/relayroom
     ports:
       - 8080:8080
     env_file:

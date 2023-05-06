@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/SushiWaUmai/game-relay-server/game"
+	"github.com/SushiWaUmai/relayroom/game"
 	"github.com/gin-gonic/gin"
 )
 

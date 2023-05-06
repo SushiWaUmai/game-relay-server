@@ -29,6 +29,6 @@ jobs:
           file: ./Dockerfile
           platforms: linux/arm64,linux/amd64
           push: ${{ github.ref == 'refs/heads/main' }}
-          tags: ${{ secrets.DOCKER_USERNAME }}/game-relay-server:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

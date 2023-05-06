@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/SushiWaUmai/game-relay-server/api"
-	"github.com/SushiWaUmai/game-relay-server/env"
+	"github.com/SushiWaUmai/relayroom/api"
+	"github.com/SushiWaUmai/relayroom/env"
 )
 
 func main() {
